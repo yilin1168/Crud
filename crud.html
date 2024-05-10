@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表格数据提交</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        input[type="text"], button.delete, button.add {
+            width: 95%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            display: block;
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;  /* Adds space between buttons */
+        }
+    </style>
+</head>
+<body>
+    <h1>表格数据提交</h1>
+    <table id="editableTable">
+        <thead>
+            <tr>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>提交时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" value="张三"></td>
+                <td><input type="text" value="25"></td>
+                <td>Aug. 20, 2023, 2:32 p.m.</td>
+                <td><button class="delete" onclick="deleteRow(this)">删除</button></td>
+            </tr>
+            <tr>
+                <td><input type="text" value="李四"></td>
+                <td><input type="text" value="30"></td>
+                <td>Aug. 20, 2023, 3:45 p.m.</td>
+                <td><button class="delete" onclick="deleteRow(this)">删除</button></td>
+            </tr>
+            <tr>
+                <td><input type="text" value="王五"></td>
+                <td><input type="text" value="28"></td>
+                <td>Aug. 20, 2023, 4:56 p.m.</td>
+                <td><button class="delete" onclick="deleteRow(this)">删除</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- 添加新增行的按钮 -->
+    <div class="button-group">
+        <button onclick="addRow()">添加一行</button>
+        <!-- 提交按钮 -->
+        <button onclick="submitData()">提交数据ToDB</button>
+    </div>
+
+
+    <script>
+        function deleteRow(button) {
+            var row = button.parentNode.parentNode;
+            row.style.display = 'none'; // Immediately hide the row on button click
+            row.classList.add('delete-mark'); // 标记行为删除，但不立即隐藏，便于恢复操作
+        }
+
+        function addRow() {
+            const table = document.getElementById('editableTable');
+            const row = table.insertRow(-1); // 在表格末尾添加行
+            row.innerHTML = `<td><input type="text" placeholder="输入姓名"></td>
+                             <td><input type="text" placeholder="输入年龄"></td>
+                             <td></td>
+                             <td><button class="delete" onclick="deleteRow(this)">删除</button></td>`;
+        }
+
+        function submitData() {
+            const table = document.getElementById('editableTable');
+            const rows = table.querySelectorAll('tbody tr:not(.delete-mark)');
+
+            const addData = [];
+            const updateData = [];
+            const deleteData = [];
+
+            // 处理删除的数据
+            document.querySelectorAll('.delete-mark').forEach(row => {
+                console.log(row);
+                deleteData.push()
+                // if (row.hasAttribute('data-id')) { // 检查是否是已存在的数据
+                //     deleteData.push(row.getAttribute('data-id'));
+                // }
+                row.remove(); // 现在可以移除标记删除的行
+            });
+
+            // document.querySelectorAll('.delete-mark').forEach(row => {
+            //     row.remove(); // 移除行
+            // });
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                if (inputs.length > 0) {
+                    const name = inputs[0].value;
+                    const age = inputs[1].value;
+                    const currentTime = new Date().toLocaleString('en-US', {month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
+                    }).replace(',', '').replace('AM', 'a.m.').replace('PM', 'p.m.');
+                    if (row.hasAttribute('data-id')) {
+                        // 更新现有的数据
+                        updateData.push({
+                            id: row.getAttribute('data-id'),
+                            name: name,
+                            age: age,
+                            submittime:currentTime
+                        });
+                    } else {
+                        // 添加新的数据
+                        addData.push({name: name, age: age, submittime: currentTime});
+                    }
+                    // row.cells[2].textContent = currentTime;
+                }
+            });
+
+            console.log({addData, updateData, deleteData});
+            // 这里可以添加fetch请求发送这些数据到后端
+            const dataToSend = { add: addData, update: updateData, delete: deleteData };
+
+            // Fetch 请求发送数据
+            fetch('/path/to/your/django/view/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')  // 确保CSRF Token被包含
+                },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // 或者返回其他处理方式，取决于后端响应
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('数据提交成功!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('数据提交失败: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
+
