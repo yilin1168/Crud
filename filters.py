@@ -17,7 +17,7 @@ for item in field2_max_field1:
 max_records = CModel.objects.filter(query_conditions).values('field1', 'field2', 'field3', 'field4')
 
 
-
+### SQL
 from django.db import connection
 from myapp.models import CModel
 
@@ -38,3 +38,16 @@ with connection.cursor() as cursor:
 
 # 将结果转换为CModel对象，假设你需要以Django模型的形式处理它们
 cmodels = [CModel(*row) for row in results]
+
+
+###subquery
+from django.db.models import OuterRef, Subquery
+
+# 创建一个子查询，用于找到每个field2的field1最大值对应的记录
+subquery = CModel.objects.filter(field2=OuterRef('field2')).order_by('-field1').values('field1')[:1]
+
+# 主查询，查询符合子查询条件的记录
+resulting_queryset = CModel.objects.filter(field1=Subquery(subquery)).order_by('field2')
+
+# 现在 resulting_queryset 包含了每个 field2 的 field1 最大值的记录
+
