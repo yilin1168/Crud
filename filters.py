@@ -15,3 +15,26 @@ for item in field2_max_field1:
 
 # 查询符合条件的记录
 max_records = CModel.objects.filter(query_conditions).values('field1', 'field2', 'field3', 'field4')
+
+
+
+from django.db import connection
+from myapp.models import CModel
+
+# 编写SQL查询
+sql = """
+SELECT * FROM (
+    SELECT *,
+    RANK() OVER (PARTITION BY field2 ORDER BY field1 DESC) as rank
+    FROM myapp_cmodel
+) as ranked
+WHERE ranked.rank = 1;
+"""
+
+# 执行原生SQL查询
+with connection.cursor() as cursor:
+    cursor.execute(sql)
+    results = cursor.fetchall()
+
+# 将结果转换为CModel对象，假设你需要以Django模型的形式处理它们
+cmodels = [CModel(*row) for row in results]
