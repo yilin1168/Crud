@@ -46,3 +46,18 @@ urlpatterns = [
     path('no_permission/', permission_denied_view, name='no_permission'),
 ]
 
+
+#no permission.html
+<!-- no_permission.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>No Permission</title>
+</head>
+<body>
+    <h1>No Permission</h1>
+    <p>You do not have the required permission to view this page.</p>
+</body>
+</html>
+
+
