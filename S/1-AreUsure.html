@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation Dialog Example</title>
+    <style>
+        /* 遮罩层样式 */
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 弹窗样式 */
+        #confirmationDialog {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <form id="myForm">
+        <!-- 其他表单元素 -->
+        <button type="button" onclick="showConfirmation()">Submit</button>
+    </form>
+
+    <div id="overlay">
+        <div id="confirmationDialog">
+            <p>Caution: Are you sure?</p>
+            <button onclick="confirmAction()">Confirm</button>
+            <button onclick="hideConfirmation()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function showConfirmation() {
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function hideConfirmation() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function confirmAction() {
+            hideConfirmation();
+            submitForm();
+        }
+
+        function submitForm() {
+            // 假设你的Django后端API URL是 /your-django-endpoint/
+            const url = '/your-django-endpoint/';
+            const formData = new FormData(document.getElementById('myForm'));
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // 你可以在这里添加进一步的处理逻辑，比如显示成功消息或重定向
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // 你可以在这里添加错误处理逻辑
+            });
+        }
+    </script>
+</body>
+</html>
