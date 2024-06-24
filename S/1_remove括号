@@ -1,0 +1,9 @@
+import re
+
+def remove_parentheses_content(s):
+    return re.sub(r'\(.*?\)', '', s)
+
+# 示例
+input_string = "这是一个示例字符串 (删除这部分内容) 和其他内容/ (删除这部分内容) 和其他内容。"
+output_string = remove_parentheses_content(input_string)
+print(output_string)  # 输出: "这是一个示例字符串  和其他内容/  和其他内容。"
