@@ -6,12 +6,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
+        'standard': {
+            'format': '[{asctime}] "{message}"',
             'style': '{',
         },
     },
@@ -20,12 +16,12 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'useRecords.log'),
-            'formatter': 'verbose',
+            'formatter': 'standard',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+            'formatter': 'standard',
         },
     },
     'loggers': {
