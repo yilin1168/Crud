@@ -3,16 +3,14 @@ import logging
 
 class UsernameFilter(logging.Filter):
     def filter(self, record):
-        from django.contrib.auth.models import AnonymousUser
-        from threading import current_thread
-
-        request = getattr(current_thread(), 'request', None)
-        if request:
-            user = getattr(request, 'user', AnonymousUser())
-            record.username = user.username if user.is_authenticated else 'AnonymousUser'
-        else:
-            record.username = 'N/A'
+        try:
+            from django.utils.thread_support import get_current_request
+            request = get_current_request()
+            record.username = request.user.username
+        except Exception:
+            record.username = 'Anonymous'
         return True
+
 
 
 #settings.py
@@ -25,38 +23,44 @@ LOGGING = {
         },
     },
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message} user={username}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message} user={username}',
+        'standard': {
+            'format': '[{asctime}] {username} "{message}"',
             'style': '{',
         },
     },
     'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'useRecords.log'),
+            'formatter': 'standard',
+            'filters': ['username_filter'],
+        },
         'console': {
             'level': 'DEBUG',
-            'filters': ['username_filter'],
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'DEBUG',
+            'formatter': 'standard',
             'filters': ['username_filter'],
-            'class': 'logging.FileHandler',
-            'filename': 'django.log',
-            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
             'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }
+
+
+
+
+
 
 MIDDLEWARE = [
     # ... 其他中间件 ...
@@ -76,3 +80,21 @@ class RequestMiddleware:
         current_thread().request = request
         response = self.get_response(request)
         return response
+
+
+import threading
+
+_thread_locals = threading.local()
+
+def get_current_request():
+    return getattr(_thread_locals, 'request', None)
+
+class ThreadLocalMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        _thread_locals.request = request
+        response = self.get_response(request)
+        return response
+
