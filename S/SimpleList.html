@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+</head>
+<body>
+    <!-- AdminLTE 内容 -->
+    <div class="content">
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>名字</th>
+                    <th>位置</th>
+                    <th>年龄</th>
+                    <th>开始日期</th>
+                    <th>薪水</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><button class="submit-row">Submit</button></td>
+                    <td><input type="text" class="editable" data-name="name" data-pk="1" value="Tiger Nixon"></td>
+                    <td><input type="text" class="editable" data-name="position" data-pk="1" value="System Architect"></td>
+                    <td><input type="text" class="editable" data-name="age" data-pk="1" value="61"></td>
+                    <td><input type="text" class="editable" data-name="start_date" data-pk="1" value="2011/04/25"></td>
+                    <td><input type="text" class="editable" data-name="salary" data-pk="1" value="$320,800"></td>
+                </tr>
+                <tr>
+                    <td><button class="submit-row">Submit</button></td>
+                    <td><input type="text" class="editable" data-name="name" data-pk="2" value="Garrett Winters"></td>
+                    <td><input type="text" class="editable" data-name="position" data-pk="2" value="Accountant"></td>
+                    <td><input type="text" class="editable" data-name="age" data-pk="2" value="63"></td>
+                    <td><input type="text" class="editable" data-name="start_date" data-pk="2" value="2011/07/25"></td>
+                    <td><input type="text" class="editable" data-name="salary" data-pk="2" value="$170,750"></td>
+                </tr>
+                <!-- 更多行 -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable();
+
+            $('.submit-row').on('click', function() {
+                var $row = $(this).closest('tr');
+                var rowData = {};
+                $row.find('.editable').each(function() {
+                    var name = $(this).data('name');
+                    var value = $(this).val();
+                    var pk = $(this).data('pk');
+                    rowData[name] = value;
+                    rowData['pk'] = pk;
+                });
+                console.log(rowData);
+
+                $.ajax({
+                    url: '/submit_row',
+                    method: 'POST',
+                    data: rowData,
+                    success: function(response) {
+                        alert('Row submitted successfully!');
+                    },
+                    error: function(error) {
+                        alert('Failed to submit row!');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
