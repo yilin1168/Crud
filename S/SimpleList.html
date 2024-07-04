@@ -53,6 +53,16 @@
                     var name = $(this).data('name');
                     var value = $(this).val();
                     var pk = $(this).data('pk');
+
+                    if ($(this).is('td') && $(this).find('select').length > 0) {
+                        value = $(this).find('select option:selected').val();
+                    } else if ($(this).is('td')) {
+                        value = $(this).text();
+                    } else if ($(this).is('input')) {
+                        value = $(this).val();
+                    } 
+
+                    
                     rowData[name] = value;
                     rowData['pk'] = pk;
                 });
