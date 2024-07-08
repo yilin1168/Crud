@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expandable List</title>
+    <style>
+        .details {
+            display: none;
+            margin-left: 20px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <ul>
+        <li>
+            <span class="toggle">Item 1</span>
+            <ul class="details">
+                <li>Detail 1-1</li>
+                <li>Detail 1-2</li>
+            </ul>
+        </li>
+        <li>
+            <span class="toggle">Item 2</span>
+            <ul class="details">
+                <li>Detail 2-1</li>
+                <li>Detail 2-2</li>
+            </ul>
+        </li>
+    </ul>
+
+    <script>
+        $(document).ready(function () {
+            $('.toggle').click(function () {
+                $(this).next('.details').slideToggle();
+            });
+        });
+    </script>
+</body>
+</html>
