@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视图1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chart {
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>这是视图1的内容</h1>
+    <div id="chart"></div>
+    <a href="index.html">返回首页</a>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+    <script>
+        var chartDom = document.getElementById('chart');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            title: {
+                text: 'ECharts 示例图表'
+            },
+            tooltip: {},
+            xAxis: {
+                data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+
+        option && myChart.setOption(option);
+    </script>
+</body>
+</html>
