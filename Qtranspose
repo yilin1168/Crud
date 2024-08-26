@@ -1,0 +1,16 @@
+// 假设已有的table1
+table1:([] id:1 1 1 2 2 2 3 3 3; pair:`AAPL`AAPL`AAPL`MSFT`MSFT`MSFT`GOOG`GOOG`GOOG; time:.z.p+til 9; mid:10 20 30 40 50 60 70 80 90)
+
+// 生成序列编号
+tableWithSeq: update seq:1+til count i from table1 by id,pair
+
+// 创建透视表格，列名为 mid1, mid2, ..., mid10
+pivotedTable: select mid1:mid where seq=1, mid2:mid where seq=2,
+                     mid3:mid where seq=3, mid4:mid where seq=4,
+                     mid5:mid where seq=5, mid6:mid where seq=6,
+                     mid7:mid where seq=7, mid8:mid where seq=8,
+                     mid9:mid where seq=9, mid10:mid where seq=10
+              by id,pair from tableWithSeq
+
+// 打印结果
+pivotedTable
