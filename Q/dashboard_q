@@ -1,0 +1,5 @@
+// 计算 pd='a' 条件下所有 quantity 的总和
+totalSum: sum select quantity from table where pd='a';
+
+// 对 pd='a' 按 pair 分组计算 sum:quantity，并添加 percentage 字段
+result: select sum:quantity, percentage:100.0 * quantity % totalSum by pair from table where pd='a';
